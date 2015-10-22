@@ -51,22 +51,30 @@ case "$1" in
 		/etc/init.d/oracle-xe start
 		echo "Database ready to use. Enjoy! ;)"
 
-		if [ "$DATABASES" == "" ]; then
-			echo "If you want to create DBs automatically specify DATABASES environment variable";
+		if [ "$SCHEMAS" == "" ]; then
+			echo "If you want to create DBs automatically specify SCHEMAS environment variable";
 		else
-			for db in ${DATABASES} ; do
+			for db in ${SCHEMAS} ; do
 				if [ -f "/db.${db}" ];
 				then
 					echo "User ${db} already exists"
 				else
-					echo "Is about to create database: $db"
-					cp /template.schema.sql /$db.schema.sql
-					sed -i -E "s/TEMPLATE_USER/$db/g" /$db.schema.sql
-					sqlplus -S system/oracle@localhost @/$db.schema.sql
+					echo "Is about to create schema: $db"
+					cp /u01/scripts/template.schema.sql /u01/scripts/$db.schema.sql
+					sed -i -E "s/TEMPLATE_USER/$db/g" /u01/scripts/$db.schema.sql
+					sqlplus -S system/oracle@localhost @/u01/scripts/$db.schema.sql
 					touch "/db.${db}"
 				fi
 			done
 		fi
+
+		## Execute all sql scripts in batch folder with parameters
+		if [ "$BATCH_PARAMS" == "" ]; then
+			echo "Executing scripts in batch folder with no parameters... ";
+		else
+			echo "Executing scripts in batch folder with parameters: [" $BATCH_PARAMS "] ...";
+		fi
+		sqlplus -S system/oracle@localhost @/u01/scripts/batch.sql $BATCH_PARAMS
 
 		##
 		## Workaround for graceful shutdown. ....ing oracle... ‿( ́ ̵ _-`)‿
