@@ -20,6 +20,12 @@ docker build -t rgt-ora .
 docker run -d -p 1521:1521 -p 8080:8080 --env SCHEMAS=PRU --env BATCH_PARAMS=World --name ora rgt-ora  && docker logs --follow ora
 ```
 
+You can run from docker hub instead of create your own image like this:
+
+```
+docker run -d -p 1521:1521 -p 8080:8080 --env SCHEMAS=PRU --env BATCH_PARAMS="World" -v /your/host/batch/scripts/folder:/u01/scripts/batch --name ora carloscastillo/rgt-oracle-xe-11g  && docker logs --follow ora
+```
+
 This should be the output:
 
 ```

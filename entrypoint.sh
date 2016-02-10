@@ -74,6 +74,8 @@ case "$1" in
 		else
 			echo "Executing scripts in batch folder with parameters: [" $BATCH_PARAMS "] ...";
 		fi
+		ls -1 -Q /u01/scripts/batch/*.sql |sed 's/\(.\)/@@&/' > /u01/scripts/batch.sql
+		echo "exit;" >> /u01/scripts/batch.sql && echo "" >> /u01/scripts/batch.sql
 		sqlplus -S system/oracle@localhost @/u01/scripts/batch.sql $BATCH_PARAMS
 
 		##
